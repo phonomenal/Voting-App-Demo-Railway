@@ -17,9 +17,18 @@ Railway offers the easiest deployment with built-in Redis support.
    - Select this repository
    - Railway will automatically detect the `railway.json` config
 
-3. **Add Redis Database**
+3. **Add Redis Database (Two Options)**
+
+   **Option A: External Redis (Recommended for Free Tier)**
+   - Sign up at [upstash.com](https://upstash.com) (free tier: 10K commands/day)
+   - Create a free Redis database
+   - Copy the Redis URL
+   - In Railway: Go to Variables tab → Add `REDIS_URL=your-upstash-url`
+
+   **Option B: Railway Redis (Requires Paid Plan)**
    - In your project dashboard, click "New" → "Database" → "Add Redis"
    - Railway will automatically set the `REDIS_URL` environment variable
+   - Note: Free tier has database limitations
 
 4. **Configure Environment Variables**
    - Go to your service → "Variables" tab
@@ -188,17 +197,35 @@ To test locally before deploying:
 
 ## Troubleshooting
 
+### Railway "Limited Access" Error
+**Problem**: Can't deploy databases on Railway free tier
+**Solutions**:
+1. **Use Upstash Redis** (recommended):
+   - Sign up at upstash.com
+   - Create free Redis database
+   - Add `REDIS_URL` to Railway variables
+2. **Use in-memory storage** (testing only):
+   - Don't set any Redis environment variables
+   - App will automatically use in-memory storage
+   - Note: Data resets on each deployment
+3. **Switch to Render**: Has free Redis included
+
 ### Redis Connection Issues
 - Verify Redis URL format: `redis://user:password@host:port`
 - Check if Redis service is running
-- Ensure firewall allows Redis port (6379)
+- App will automatically fallback to in-memory storage if Redis fails
 
 ### App Won't Start
-- Check logs for Python import errors
+- Check Railway logs in dashboard
 - Verify all environment variables are set
-- Ensure port is not already in use
+- Ensure port binding is correct (app uses PORT env var)
 
 ### Deployment Fails
 - Check Dockerfile syntax
 - Verify requirements.txt has all dependencies
 - Ensure build commands are correct for your platform
+
+### No URL Showing
+- Wait for deployment to complete (green status)
+- Check that service type is "Web Service"
+- Verify app is listening on correct port
