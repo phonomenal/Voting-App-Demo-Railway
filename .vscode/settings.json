@@ -2,7 +2,7 @@
     "python.testing.unittestArgs": [
         "-v",
         "-s",
-        "./azure-vote",
+        "./voting-service",
         "-p",
         "test_*.py"
     ],
@@ -10,7 +10,7 @@
     "python.testing.nosetestsEnabled": false,
     "python.testing.unittestEnabled": true,
     "python.testing.pytestArgs": [
-        "azure-vote"
+        "voting-service"
     ],
     "python.linting.pylintEnabled": false,
     "python.linting.flake8Enabled": true,

@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: azure-vote-back
+  name: voting-service-back
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: azure-vote-back
+      app: voting-service-back
   template:
     metadata:
       labels:
-        app: azure-vote-back
+        app: voting-service-back
     spec:
       nodeSelector:
         "beta.kubernetes.io/os": linux
       containers:
-      - name: azure-vote-back
+      - name: voting-service-back
         image: mcr.microsoft.com/oss/bitnami/redis:6.0.8
         env:
         - name: ALLOW_EMPTY_PASSWORD
@@ -28,26 +28,26 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: azure-vote-front
+  name: voting-service-front
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: azure-vote-front
+      app: voting-service-front
   strategy:
     rollingUpdate:
       maxSurge: 1
       maxUnavailable: 1
-  minReadySeconds: 5 
+  minReadySeconds: 5
   template:
     metadata:
       labels:
-        app: azure-vote-front
+        app: voting-service-front
     spec:
       nodeSelector:
         "beta.kubernetes.io/os": linux
       containers:
-      - name: azure-vote-front
+      - name: voting-service-front
         image: ghcr.io/james-leha/demoday-aks-to-z:v1
         ports:
         - containerPort: 80
@@ -58,4 +58,4 @@ spec:
             cpu: 500m
         env:
         - name: REDIS
-          value: "azure-vote-back"
+          value: "voting-service-back"

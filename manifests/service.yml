@@ -1,20 +1,20 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: azure-vote-front
+  name: voting-service-front
 spec:
   type: LoadBalancer
   ports:
   - port: 80
   selector:
-    app: azure-vote-front
+    app: voting-service-front
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: azure-vote-back
+  name: voting-service-back
 spec:
   ports:
   - port: 6379
   selector:
-    app: azure-vote-back
+    app: voting-service-back

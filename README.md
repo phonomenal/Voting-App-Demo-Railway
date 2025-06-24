@@ -1,90 +1,241 @@
----
-page_type: sample
-languages:
-  - python
-products:
-  - azure
-  - azure-redis-cache
-description: "This sample creates a multi-container application in an Azure Kubernetes Service (AKS) cluster."
----
-# GitHub Demo Day
+# Voting Service Demo
 
-This demo is part of the GitHub Demo Day sessions hosted weekly! 
-- [Demo Days - From A(KS) to Z, automate your workflows with GitHub!](https://www.linkedin.com/events/demodays-keepcalmanddevopson6838532958866022401/)
-- Friday - Sep 10, 2021
+A modern, containerized voting application built with Python Flask and Redis, demonstrating cloud-native development practices and deployment strategies.
 
-We will use this repo to see how GitHub can simplify security, automation, container management, K8s deployments and more!
+## 🗳️ What is this app?
 
-## Prerequisites
+This is a simple yet powerful voting application that allows users to vote between two options (currently Pizza vs Brownie in a "bake off" scenario). The application demonstrates:
 
-1. This demo requires 3 secrets to be generated:
+- **Microservices Architecture**: Separate frontend (Python Flask) and backend (Redis) services
+- **Containerization**: Full Docker support for consistent deployment across environments
+- **Cloud Deployment**: Ready for deployment on Railway with automatic scaling
+- **Local Development**: Easy setup with Docker Compose for development and testing
 
-| Secret Name | Value Required |
-|-------------      |--------------- |
-|AKS_CLUSTER_NAME                     | AKS Cluster name |
-|AKS_CLUSTER_RESOURCE_GROUP           | Resource Group that contains the AKS Cluster  |
-|AZURE_SERVICE_PROVIDER_CREDENTIALS   | SP with permission to access the Azure Resource Group |
-|GH_ENV_PAT                           | PAT with repo admin access | 
+## 🏗️ How it works
 
-### Generate Azure Service Principal
-To deploy to Azure you will need to create a service principal. You can do that with the following command:
+The application consists of two main components:
 
-```sh
-az ad sp create-for-rbac --name {yourServicePrincipalName} --role contributor \
-                            --scopes /subscriptions/{subscription-id} \
-                            --sdk-auth
+### Frontend Service (`voting-service-front`)
+- **Technology**: Python Flask web application
+- **Purpose**: Serves the web interface and handles user interactions
+- **Features**:
+  - Clean, responsive web interface
+  - Real-time vote counting
+  - Vote reset functionality
+  - Configurable voting options and titles
 
-  # Replace {yourServicePrincipalName}, {subscription-id} with the a service principal name and subscription id.
+### Backend Service (`voting-service-back`)
+- **Technology**: Redis database
+- **Purpose**: Stores and manages vote counts
+- **Features**:
+  - In-memory data storage for fast access
+  - Persistent vote counting
+  - Automatic failover to in-memory storage if Redis is unavailable
 
-  # The command should output a JSON object similar to the example below
+### Architecture Flow
+1. User visits the web interface
+2. User clicks on their preferred option (Pizza or Brownie)
+3. Frontend service processes the vote
+4. Vote is stored in Redis backend
+5. Updated vote counts are displayed in real-time
 
-  {
-    "clientId": "<GUID>",
-    "clientSecret": "<GUID>",
-    "subscriptionId": "<GUID>",
-    "tenantId": "<GUID>",
-    (...)
-  }
+## 🚀 Local Development & Testing
+
+### Prerequisites
+- [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/)
+- Git
+
+### Quick Start
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd Voting-App-Demo
+   ```
+
+2. **Build and run with Docker Compose**
+   ```bash
+   # Build the application
+   docker compose build
+
+   # Start all services
+   docker compose up
+   ```
+
+3. **Access the application**
+   - Open your browser and navigate to: http://localhost:8080
+   - Start voting and see the results update in real-time!
+
+4. **Stop the application**
+   ```bash
+   # Stop services (Ctrl+C, then)
+   docker compose down
+   ```
+
+### Development Workflow
+
+1. **Make changes to the application**
+   - Edit files in `voting-service/voting-service/`
+   - Modify `config_file.cfg` to change voting options or title
+
+2. **Rebuild and test**
+   ```bash
+   docker compose build
+   docker compose up
+   ```
+
+3. **View logs**
+   ```bash
+   # View all logs
+   docker compose logs
+
+   # View specific service logs
+   docker compose logs voting-service-front
+   docker compose logs voting-service-back
+   ```
+
+### Customization
+
+Edit `voting-service/voting-service/config_file.cfg` to customize:
+```ini
+# UI Configurations
+TITLE = 'Your Custom Voting Title!'
+VOTE1VALUE = 'Option A'
+VOTE2VALUE = 'Option B'
+SHOWHOST = 'false'
 ```
 
-## How to Demo
-1. Open project in Codespaces or VS Code
-2. Use `docker-compose build` and `docker-compose up` commands to show off the application locally
-  - Navgate to http://localhost:8080
-3. Create a new branch, 
-    - modify `azure-vote/azure-vote/config_file.cfg` to update homepage values
-1. Create a PR, utilize review-lab keyword comment - if desired.
-1. Show AKS Cluster to demonstrate any namespace updates/changes.
-1. Merge PR, observe that **Cleanup PR** and **AKS Staging & Production - Deploy** workflows kick off
-1. View Staging and Production environment deployments
+## ☁️ Railway Deployment
 
+This application is configured for easy deployment on [Railway](https://railway.app), a modern cloud platform that simplifies deployment.
 
-# Azure Voting App
+### Automatic Deployment (Recommended)
 
-This sample creates a multi-container application in an Azure Kubernetes Service (AKS) cluster. The application interface has been built using Python / Flask. The data component is using Redis.
+1. **Fork this repository** to your GitHub account
 
-To walk through a quick deployment of this application, see the AKS [quick start](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough?WT.mc_id=none-github-nepeters).
+2. **Connect to Railway**
+   - Visit [Railway](https://railway.app)
+   - Sign up/login with your GitHub account
+   - Click "New Project" → "Deploy from GitHub repo"
+   - Select your forked repository
 
-To walk through a complete experience where this code is packaged into container images, uploaded to Azure Container Registry, and then run in and AKS cluster, see the [AKS tutorials](https://docs.microsoft.com/en-us/azure/aks/tutorial-kubernetes-prepare-app?WT.mc_id=none-github-nepeters).
+3. **Add Redis Database**
+   - In your Railway project dashboard
+   - Click "New" → "Database" → "Add Redis"
+   - Railway automatically configures the `REDIS_URL` environment variable
 
-# Troubleshooting / Limitations
+4. **Configure Environment Variables** (Optional)
+   - Go to your service settings
+   - Add custom environment variables:
+     - `VOTE1VALUE`: First voting option (default: "Pizza")
+     - `VOTE2VALUE`: Second voting option (default: "Brownie")
+     - `TITLE`: Application title (default: "Bake off voting service demo!")
 
-## Manifest File
-Currently the `manifests/deployment.yml` file needs to have the `azure-vote-front` **image** value updated to match your repository.
+5. **Deploy**
+   - Railway automatically builds and deploys your application
+   - Your app will be available at the provided Railway URL
 
-## Available resources for multiple namespaces
-For demo purposes, the manifest files only ask for 1 replica for the services. Multiple replicas or namespaces (5+) may hit resource limitations for your AKS cluster.
+### Manual Deployment with Railway CLI
 
-# References
+1. **Install Railway CLI**
+   ```bash
+   npm install -g @railway/cli
+   ```
 
-## Microsoft Teams
-GitHub is the world's leading software development platform. Microsoft Teams is one of the most popular communication platforms where modern development teams come together to build world-class products and services. With two of your most important workspaces connected, you'll stay updated on what's happening on GitHub without leaving Microsoft Teams.
-- https://github.com/integrations/microsoft-teams
+2. **Run the deployment script**
+   ```bash
+   chmod +x deploy-railway.sh
+   ./deploy-railway.sh
+   ```
 
-## GitHub Actions
-Environments - You can configure environments with protection rules and secrets. When a workflow job references an environment, the job won't start until all of the environment's protection rules pass.
-- https://docs.github.com/en/actions/reference/environments
+3. **Follow the interactive prompts**
+   - Login to Railway
+   - Create a new project
+   - Add Redis database manually through the dashboard
+   - Deploy the application
 
-## GitHub Container Registry
-You can store and manage Docker and OCI images in the Container registry, which uses the package namespace https://ghcr.io.
-- https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry
+### Railway Configuration
+
+The application includes:
+- **`railway.json`**: Railway-specific configuration
+- **`Dockerfile`**: Production-ready container configuration
+- **Health checks**: Automatic health monitoring
+- **Auto-restart**: Automatic restart on failure
+
+## 🛠️ Technical Details
+
+### Project Structure
+```
+Voting-App-Demo/
+├── voting-service/           # Main application directory
+│   ├── voting-service/       # Python Flask application
+│   │   ├── main.py          # Main application file
+│   │   ├── config_file.cfg  # Configuration file
+│   │   └── templates/       # HTML templates
+│   └── Dockerfile           # Container configuration
+├── compose.yaml             # Docker Compose configuration
+├── Dockerfile               # Production Dockerfile for Railway
+├── railway.json             # Railway deployment configuration
+├── deploy-railway.sh        # Railway deployment helper script
+└── manifests/               # Kubernetes manifests (for AKS deployment)
+```
+
+### Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `REDIS_URL` | Redis connection URL | Auto-configured by Railway |
+| `REDIS` | Redis hostname | `voting-service-back` (Docker Compose) |
+| `VOTE1VALUE` | First voting option | `Pizza` |
+| `VOTE2VALUE` | Second voting option | `Brownie` |
+| `TITLE` | Application title | `Bake off voting service demo!` |
+| `FLASK_ENV` | Flask environment | `production` |
+
+### Ports
+- **Frontend**: Port 8080 (local), Port 5000 (Railway)
+- **Redis**: Port 6379 (internal)
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+1. **Port already in use**
+   ```bash
+   # Stop any running containers
+   docker compose down
+   # Or change the port in compose.yaml
+   ```
+
+2. **Redis connection issues**
+   - Ensure Redis service is running: `docker compose ps`
+   - Check logs: `docker compose logs voting-service-back`
+
+3. **Application not loading**
+   - Verify all services are running: `docker compose ps`
+   - Check application logs: `docker compose logs voting-service-front`
+
+### Development Tips
+
+- Use `docker compose up --build` to rebuild and start in one command
+- Add `-d` flag to run in background: `docker compose up -d`
+- Use `docker compose exec voting-service-front bash` to access the container shell
+
+## 📚 Additional Resources
+
+- [Docker Compose Documentation](https://docs.docker.com/compose/)
+- [Railway Documentation](https://docs.railway.app/)
+- [Flask Documentation](https://flask.palletsprojects.com/)
+- [Redis Documentation](https://redis.io/documentation)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature-name`
+3. Make your changes and test locally
+4. Commit your changes: `git commit -am 'Add some feature'`
+5. Push to the branch: `git push origin feature-name`
+6. Submit a pull request
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).

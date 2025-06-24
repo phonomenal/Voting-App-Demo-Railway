@@ -169,7 +169,7 @@ To test locally before deploying:
 
 4. **Run Application**
    ```bash
-   cd azure-vote/azure-vote
+   cd voting-service/voting-service
    python main.py
    ```
 

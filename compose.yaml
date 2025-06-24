@@ -1,0 +1,19 @@
+version: '3'
+services:
+  voting-service-back:
+    image: mcr.microsoft.com/oss/bitnami/redis:6.0.8
+    container_name: voting-service-back
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
+    ports:
+        - "6379:6379"
+
+  voting-service-front:
+    build: ./voting-service
+    # image: fabrikam.azurecr.io/voting-service-front:v1
+    image: ghcr.io/james-leha/demoday-aks-to-z/voting-service-front:v1
+    container_name: voting-service-front
+    environment:
+      REDIS: voting-service-back
+    ports:
+        - "8080:80"
